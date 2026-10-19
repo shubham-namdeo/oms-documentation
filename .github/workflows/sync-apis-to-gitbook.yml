@@ -42,7 +42,7 @@ jobs:
           MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Order Routing API..."
-          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
             https://dev-maarg.hotwax.io/rest/service.swagger/order-routing \
             -o order-routing.swagger.json
           gitbook openapi publish \
@@ -58,7 +58,7 @@ jobs:
           MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Available to Promise API..."
-          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
             https://dev-maarg.hotwax.io/rest/service.swagger/available-to-promise \
             -o atp.swagger.json
           gitbook openapi publish \
@@ -74,7 +74,7 @@ jobs:
           MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Fulfillment API..."
-          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
             https://dev-maarg.hotwax.io/rest/service.swagger/poorti \
             -o poorti.swagger.json
           gitbook openapi publish \
@@ -90,7 +90,7 @@ jobs:
           MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Inventory Count API..."
-          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
             https://dev-maarg.hotwax.io/rest/service.swagger/inventory-cycle-count \
             -o inventory-count.swagger.json
           gitbook openapi publish \
@@ -106,7 +106,7 @@ jobs:
           MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Commerce Admin API..."
-          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
             https://dev-maarg.hotwax.io/rest/service.swagger/admin \
             -o admin.swagger.json
           gitbook openapi publish \
