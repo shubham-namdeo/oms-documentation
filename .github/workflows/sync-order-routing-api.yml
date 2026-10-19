@@ -1,0 +1,33 @@
+name: Sync Order Routing API to GitBook
+
+on:
+  workflow_dispatch: # Allows you to click a "Run workflow" button in GitHub Actions
+  schedule:
+    - cron: '0 0 * * 0' # Automatically runs every Sunday at midnight
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install GitBook CLI
+        run: npm install -g @gitbook/cli
+
+      - name: Download Swagger JSON from Moqui
+        run: |
+          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/order-routing \
+            -o order-routing.swagger.json
+
+      - name: Publish to GitBook
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+        run: |
+          gitbook openapi publish \
+            --spec "order-routing" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            order-routing.swagger.json
