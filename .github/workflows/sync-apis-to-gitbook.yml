@@ -1,5 +1,9 @@
 name: Sync HotWax APIs to GitBook
 
+permissions:
+  actions: write
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:
@@ -34,6 +38,8 @@ jobs:
         if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'order-routing' || github.event_name == 'schedule' }}"
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Order Routing API..."
           curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
@@ -48,6 +54,8 @@ jobs:
         if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'available-to-promise' || github.event_name == 'schedule' }}"
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Available to Promise API..."
           curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
@@ -62,6 +70,8 @@ jobs:
         if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'fulfillment' || github.event_name == 'schedule' }}"
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Fulfillment API..."
           curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
@@ -76,6 +86,8 @@ jobs:
         if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'inventory-count' || github.event_name == 'schedule' }}"
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Inventory Count API..."
           curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
@@ -90,6 +102,8 @@ jobs:
         if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'AdminAPI' || github.event_name == 'schedule' }}"
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
         run: |
           echo "Syncing Commerce Admin API..."
           curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
