@@ -67,7 +67,10 @@ for (const comp of COMPONENTS) {
       expect(epBodyText, `Endpoint page not found on ${epUrl}`).not.toContain('Page not found');
 
       // Verify that interactive HTTP method badges (GET, POST, PUT, DELETE, etc.) are present
-      const hasMethodBadge = await page.locator('text=/GET|POST|PUT|DELETE|PATCH/i').count();
+      const hasMethodBadge = await page
+        .locator('main')
+        .getByText(/^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)$/i)
+        .count();
       expect(
         hasMethodBadge,
         `No HTTP method badges (GET/POST/PUT/DELETE) found on endpoint page: ${epUrl}`
