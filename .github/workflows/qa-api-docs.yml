@@ -1,0 +1,55 @@
+name: QA - Verify GitBook API Docs Rendering
+
+on:
+  workflow_dispatch: # Allows manual trigger anytime
+  repository_dispatch:
+    types: [trigger-api-docs-qa]
+  schedule:
+    - cron: '15 1 * * 0' # Automatically runs 1 hour after Sunday midnight sync
+
+jobs:
+  playwright-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright & Browsers
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Wait 10 minutes for GitBook to render & deploy cache
+        run: |
+          echo "Waiting 10 minutes to allow GitBook cache rebuild and deployment to complete..."
+          sleep 600
+
+      - name: Run Playwright API Docs QA Test
+        id: test_run
+        run: |
+          npx playwright test tests/qa-api-docs-rendering.spec.ts
+
+      - name: Send Email Status Report (Pass / Fail)
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.ALERT_EMAIL_USERNAME }}
+          password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+          subject: "${{ job.status == 'success' && '✅ [PASSED]' || '🚨 [FAILED]' }} HotWax API Docs Rendering QA Report"
+          to: ${{ secrets.ALERT_EMAIL_RECIPIENT || secrets.ALERT_EMAIL_USERNAME }}
+          from: "HotWax Docs QA <shubham.namdeo@hotwax.co>"
+          body: |
+            GitBook API Documentation QA Status: ${{ job.status == 'success' && 'PASSED' || 'FAILED' }}
+
+            - Triggered by: ${{ github.event_name }} (${{ github.actor }})
+            - Commit: ${{ github.sha }}
+            - Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ${{ job.status == 'success' && 'All tested API component pages (Order Routing, ATP, Fulfillment, Inventory Count, Commerce Admin) and sampled endpoints rendered without errors.' || 'Errors were detected while verifying live GitBook OpenAPI documentation. Please inspect the workflow run logs above.' }}

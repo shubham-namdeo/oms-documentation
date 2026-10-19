@@ -1,0 +1,124 @@
+name: Sync HotWax APIs to GitBook
+
+permissions:
+  actions: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: 'Component API to sync'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - order-routing
+          - available-to-promise
+          - fulfillment
+          - inventory-count
+          - AdminAPI
+  schedule:
+    - cron: '0 0 * * 0' # Automatically runs every Sunday at midnight
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install GitBook CLI
+        run: npm install -g @gitbook/cli
+
+      - name: Sync Order Routing
+        if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'order-routing' || github.event_name == 'schedule' }}"
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
+        run: |
+          echo "Syncing Order Routing API..."
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/order-routing \
+            -o order-routing.swagger.json
+          gitbook openapi publish \
+            --spec "order-routing" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            order-routing.swagger.json
+
+      - name: Sync Available to Promise
+        if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'available-to-promise' || github.event_name == 'schedule' }}"
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
+        run: |
+          echo "Syncing Available to Promise API..."
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/available-to-promise \
+            -o atp.swagger.json
+          gitbook openapi publish \
+            --spec "available-to-promise" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            atp.swagger.json
+
+      - name: Sync Fulfillment (Poorti)
+        if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'fulfillment' || github.event_name == 'schedule' }}"
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
+        run: |
+          echo "Syncing Fulfillment API..."
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/poorti \
+            -o poorti.swagger.json
+          gitbook openapi publish \
+            --spec "fulfillment" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            poorti.swagger.json
+
+      - name: Sync Inventory Count
+        if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'inventory-count' || github.event_name == 'schedule' }}"
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
+        run: |
+          echo "Syncing Inventory Count API..."
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/inventory-cycle-count \
+            -o inventory-count.swagger.json
+          gitbook openapi publish \
+            --spec "inventory-count" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            inventory-count.swagger.json
+
+      - name: Sync Commerce Admin
+        if: "${{ github.event.inputs.component == 'all' || github.event.inputs.component == 'AdminAPI' || github.event_name == 'schedule' }}"
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          MAARG_USERNAME: ${{ secrets.MAARG_USERNAME }}
+          MAARG_PASSWORD: ${{ secrets.MAARG_PASSWORD }}
+        run: |
+          echo "Syncing Commerce Admin API..."
+          curl -f -s -u "$MAARG_USERNAME:$MAARG_PASSWORD" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/admin \
+            -o admin.swagger.json
+          gitbook openapi publish \
+            --spec "AdminAPI" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            admin.swagger.json
+
+      - name: Trigger Separate QA Verification Workflow
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Triggering separate Playwright QA workflow..."
+          gh workflow run qa-api-docs.yml --repo "${{ github.repository }}" || echo "Workflow trigger failed or pending permissions."
+
