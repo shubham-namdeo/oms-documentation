@@ -115,10 +115,32 @@ jobs:
             admin.swagger.json
 
       - name: Trigger Separate QA Verification Workflow
-        if: always()
+        if: success()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Triggering separate Playwright QA workflow..."
-          gh workflow run qa-api-docs.yml --repo "${{ github.repository }}" || echo "Workflow trigger failed or pending permissions."
+          gh workflow run qa-api-docs.yml --repo "${{ github.repository }}"
+
+      - name: Send Email Alert on Sync/Publish Failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.ALERT_EMAIL_USERNAME }}
+          password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+          subject: "🚨 [FAILED] HotWax API Sync to GitBook Failed"
+          to: ${{ secrets.ALERT_EMAIL_RECIPIENT || secrets.ALERT_EMAIL_USERNAME }}
+          from: "HotWax Docs CI <shubham.namdeo@hotwax.co>"
+          body: |
+            Failed to sync OpenAPI specifications to GitBook.
+
+            - Triggered by: ${{ github.event_name }} (${{ github.actor }})
+            - Component: ${{ github.event.inputs.component || 'all' }}
+            - Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - Commit: ${{ github.sha }}
+
+            Please inspect the workflow run logs to see whether Moqui Swagger download (curl) or GitBook CLI publish failed.
+
 

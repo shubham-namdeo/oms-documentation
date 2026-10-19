@@ -4,8 +4,6 @@ on:
   workflow_dispatch: # Allows manual trigger anytime
   repository_dispatch:
     types: [trigger-api-docs-qa]
-  schedule:
-    - cron: '15 1 * * 0' # Automatically runs 1 hour after Sunday midnight sync
 
 jobs:
   playwright-qa:
