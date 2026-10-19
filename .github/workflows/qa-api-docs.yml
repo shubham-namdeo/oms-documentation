@@ -1,0 +1,49 @@
+name: QA - Verify GitBook API Docs Rendering
+
+on:
+  workflow_dispatch: # Allows manual trigger anytime
+  repository_dispatch:
+    types: [trigger-api-docs-qa]
+  schedule:
+    - cron: '15 1 * * 0' # Automatically runs 1 hour after Sunday midnight sync
+
+jobs:
+  playwright-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright & Browsers
+        run: |
+          npm init -y
+          npm install @playwright/test
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright API Docs QA Test
+        run: |
+          npx playwright test tests/qa-api-docs-rendering.spec.ts
+
+      - name: Send Email Alert on QA Failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.ALERT_EMAIL_USERNAME }}
+          password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
+          subject: "🚨 Alert: HotWax API Docs QA Failed"
+          to: ${{ secrets.ALERT_EMAIL_RECIPIENT || secrets.ALERT_EMAIL_USERNAME }}
+          from: "HotWax Docs QA <noreply@hotwax.co>"
+          body: |
+            Automated Playwright QA check detected errors rendering the live GitBook API documentation.
+
+            Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Commit: ${{ github.sha }}
+
+            Please check the run logs to identify which OpenAPI spec failed to render.

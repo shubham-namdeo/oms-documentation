@@ -99,3 +99,12 @@ jobs:
             --spec "AdminAPI" \
             --organization "l53nGvPQLhOHrKCP9HTG" \
             admin.swagger.json
+
+      - name: Trigger Separate QA Verification Workflow
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Triggering separate Playwright QA workflow..."
+          gh workflow run qa-api-docs.yml --repo "${{ github.repository }}" || echo "Workflow trigger failed or pending permissions."
+
