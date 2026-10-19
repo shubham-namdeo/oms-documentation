@@ -1,4 +1,4 @@
-name: Sync Order Routing API to GitBook
+name: Sync HotWax APIs to GitBook
 
 on:
   workflow_dispatch: # Allows you to click a "Run workflow" button in GitHub Actions
@@ -17,17 +17,50 @@ jobs:
       - name: Install GitBook CLI
         run: npm install -g @gitbook/cli
 
-      - name: Download Swagger JSON from Moqui
+      - name: Sync Order Routing
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
         run: |
           curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
             https://dev-maarg.hotwax.io/rest/service.swagger/order-routing \
             -o order-routing.swagger.json
-
-      - name: Publish to GitBook
-        env:
-          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
-        run: |
           gitbook openapi publish \
             --spec "order-routing" \
             --organization "l53nGvPQLhOHrKCP9HTG" \
             order-routing.swagger.json
+
+      - name: Sync Available to Promise
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+        run: |
+          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/available-to-promise \
+            -o atp.swagger.json
+          gitbook openapi publish \
+            --spec "available-to-promise" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            atp.swagger.json
+
+      - name: Sync Fulfillment (Poorti)
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+        run: |
+          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/poorti \
+            -o poorti.swagger.json
+          gitbook openapi publish \
+            --spec "fulfillment" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            poorti.swagger.json
+
+      - name: Sync Commerce Admin
+        env:
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+        run: |
+          curl -f -s -u "${{ secrets.MAARG_USERNAME }}:${{ secrets.MAARG_PASSWORD }}" \
+            https://dev-maarg.hotwax.io/rest/service.swagger/admin \
+            -o admin.swagger.json
+          gitbook openapi publish \
+            --spec "AdminAPI" \
+            --organization "l53nGvPQLhOHrKCP9HTG" \
+            admin.swagger.json
