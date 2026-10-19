@@ -21,29 +21,30 @@ jobs:
 
       - name: Install Playwright & Browsers
         run: |
-          npm init -y
-          npm install @playwright/test
+          npm install
           npx playwright install --with-deps chromium
 
       - name: Run Playwright API Docs QA Test
+        id: test_run
         run: |
           npx playwright test tests/qa-api-docs-rendering.spec.ts
 
-      - name: Send Email Alert on QA Failure
-        if: failure()
+      - name: Send Email Status Report (Pass / Fail)
+        if: always()
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.ALERT_EMAIL_USERNAME }}
           password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
-          subject: "🚨 Alert: HotWax API Docs QA Failed"
+          subject: "${{ job.status == 'success' && '✅ [PASSED]' || '🚨 [FAILED]' }} HotWax API Docs Rendering QA Report"
           to: ${{ secrets.ALERT_EMAIL_RECIPIENT || secrets.ALERT_EMAIL_USERNAME }}
           from: "HotWax Docs QA <shubham.namdeo@hotwax.co>"
           body: |
-            Automated Playwright QA check detected errors rendering the live GitBook API documentation.
+            GitBook API Documentation QA Status: ${{ job.status == 'success' && 'PASSED' || 'FAILED' }}
 
-            Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            Commit: ${{ github.sha }}
+            - Triggered by: ${{ github.event_name }} (${{ github.actor }})
+            - Commit: ${{ github.sha }}
+            - Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            Please check the run logs to identify which OpenAPI spec failed to render.
+            ${{ job.status == 'success' && 'All tested API component pages (Order Routing, ATP, Fulfillment, Inventory Count, Commerce Admin) and sampled endpoints rendered without errors.' || 'Errors were detected while verifying live GitBook OpenAPI documentation. Please inspect the workflow run logs above.' }}
