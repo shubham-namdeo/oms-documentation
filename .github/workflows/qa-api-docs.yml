@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.ALERT_EMAIL_PASSWORD }}
           subject: "🚨 Alert: HotWax API Docs QA Failed"
           to: ${{ secrets.ALERT_EMAIL_RECIPIENT || secrets.ALERT_EMAIL_USERNAME }}
-          from: "HotWax Docs QA <noreply@hotwax.co>"
+          from: "HotWax Docs QA <shubham.namdeo@hotwax.co>"
           body: |
             Automated Playwright QA check detected errors rendering the live GitBook API documentation.
 
