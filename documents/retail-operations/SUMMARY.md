@@ -53,6 +53,7 @@
     * [Duplicate Orders](orders/order-management/troubleshooting/duplicate-orders.md)
     * [Shopify Order Import Failures](orders/order-management/troubleshooting/shopify-order-import-failure.md)
 * [Order routing](orders/order-routing/README.md)
+  * [Read the order routing dashboard](orders/order-routing/dashboard.md)
   * Manage and configure
     * [Manage routing groups](orders/order-routing/brokering-runs.md)
     * [Configure a routing group](orders/order-routing/routing-group-details.md)
@@ -85,7 +86,7 @@
   * [Troubleshooting](orders/pre-orders/troubleshooting/README.md)
     * [Inaccurate Inventory Computation](orders/pre-orders/troubleshooting/inaccurate-inventory-computation.md)
     * [Missing Product Linking](orders/pre-orders/troubleshooting/missing-product-linking.md)
-    * [Product Syns Issues](orders/pre-orders/troubleshooting/preorder-backorder-product-sync-issues.md)
+    * [Product Sync Issues](orders/pre-orders/troubleshooting/preorder-backorder-product-sync-issues.md)
 
 * [Returns](orders/returns/README.md)
   * [Import Returns](orders/returns/import-returns.md)
@@ -100,7 +101,7 @@
   * [Configure Product Inventory](inventory/inventory-management/configure-product-inventory.md)
 * [Inventory Upload](inventory/inventory-upload/README.md)
   * [Schedule Restocking](inventory/inventory-upload/schedule-restock.md)
-  * [Inventroy Import Method](inventory/inventory-upload/import-methods.md)
+  * [Inventory Import Methods](inventory/inventory-upload/import-methods.md)
 * [Transfers](inventory/transfers-app.md)
   * [Find Transfer Orders](inventory/find-transfer-order.md)
   * [Transfer Order Creation](inventory/transfer-order-creation.md)
@@ -111,6 +112,7 @@
 * [Cycle Count](inventory/cycle-count/README.md)
   * [Bulk Upload](inventory/cycle-count/bulk-upload.md)
   * [Create Count](inventory/cycle-count/create-count.md)
+  * [Draft](inventory/cycle-count/draft.md)
   * [Assigned](inventory/cycle-count/assigned.md)
   * [Pending Review](inventory/cycle-count/pending-review.md)
   * [Closed](inventory/cycle-count/closed.md)
